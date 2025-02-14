@@ -1,4 +1,4 @@
-fastapi
+fastapi[standard]
 starlette
 uvicorn
 motor
@@ -8,3 +8,5 @@ pytest-asyncio
 httpx
 flake8
 pytest-cov
+pymongo[srv]==4.6.2
+python-dotenv

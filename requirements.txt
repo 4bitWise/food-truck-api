@@ -1,0 +1,10 @@
+fastapi
+starlette
+uvicorn
+motor
+pydantic
+pytest
+pytest-asyncio
+httpx
+flake8
+pytest-cov

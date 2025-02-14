@@ -4,6 +4,9 @@ on: [ push, pull_request ]
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    env:
+      DATABASE_URL: ${{ secrets.ATLAS_URI }}
+      DB_NAME: ${{ secrets.DB_NAME }}
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]

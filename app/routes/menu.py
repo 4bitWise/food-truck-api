@@ -12,10 +12,10 @@ db = get_database()
 menu_collection = db["menu"]
 options_collection = db["options"]
 
-# ✅ Ensure article names are unique in MongoDB
+# Ensure article names are unique in MongoDB
 menu_collection.create_index("name", unique=True)
 
-# ✅ Check if option names exist in the database
+# Check if option names exist in the database
 async def validate_option_names(option_names: List[str]) -> None:
     existing_options = options_collection.find({"name": {"$in": option_names}})
     existing_option_names = {opt["name"] for opt in existing_options}
@@ -25,13 +25,13 @@ async def validate_option_names(option_names: List[str]) -> None:
     if missing_options:
         raise HTTPException(status_code=400, detail=f"Option(s) not found: {', '.join(missing_options)}")
     
-# ✅ Get all menu items
+# Get all menu items
 @router.get("/", response_model=List[MenuItemResponse])
 async def get_menu_items():
     menu_items = list(menu_collection.find())
     return [{**item, "id": str(item["_id"])} for item in menu_items]
 
-# ✅ Create a new menu item (Ensures unique name and valid option names)
+# Create a new menu item (Ensures unique name and valid option names)
 @router.post("/", response_model=MenuItemResponse)
 async def create_menu_item(menu_item: MenuItemCreate):
     # Validate that all options in the menu item exist
@@ -43,7 +43,7 @@ async def create_menu_item(menu_item: MenuItemCreate):
     except DuplicateKeyError:
         raise HTTPException(status_code=400, detail="Menu item name must be unique")
 
-# ✅ Update an existing menu (Validates option names)
+# Update an existing menu (Validates option names)
 @router.put("/{menu_item_id}", response_model=MenuItemResponse)
 async def update_menu(menu_item_id: str, updated_menu_item: MenuItemUpdate):
     update_data = {k: v for k, v in updated_menu_item.model_dump().items() if v is not None}
@@ -65,7 +65,7 @@ async def update_menu(menu_item_id: str, updated_menu_item: MenuItemUpdate):
 
     return MenuItemResponse(**result, id=str(result["_id"]))
 
-# ✅ Get a specific menu item by ID
+# Get a specific menu item by ID
 @router.get("/{menu_item_id}", response_model=MenuItemResponse)
 async def get_menu_item(menu_item_id: str):
     try:
@@ -77,7 +77,7 @@ async def get_menu_item(menu_item_id: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail="Invalid menu item ID")
 
-# ✅ Delete a menu item by ID
+# Delete a menu item by ID
 @router.delete("/{menu_item_id}")
 async def delete_menu_item(menu_item_id: str):
     try:

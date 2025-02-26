@@ -10,16 +10,16 @@ router = APIRouter()
 db = get_database()
 options_collection = db["options"]
 
-# ✅ Ensure name uniqueness in MongoDB
+# Ensure name uniqueness in MongoDB
 options_collection.create_index("name", unique=True)
 
-# ✅ Get all options
+# Get all options
 @router.get("/", response_model=List[OptionResponse])
 async def get_options():
     options = list(options_collection.find())
     return [{**opt, "id": str(opt["_id"])} for opt in options]
 
-# ✅ Get a specific option by its ID
+# Get a specific option by its ID
 @router.get("/{option_id}", response_model=OptionResponse)
 async def get_option(option_id: str):
     try:
@@ -31,7 +31,7 @@ async def get_option(option_id: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail="Invalid option ID")
 
-# ✅ Create a new option (Ensures unique name)
+# Create a new option (Ensures unique name)
 @router.post("/", response_model=OptionResponse)
 async def create_option(option: OptionCreate):
     try:
@@ -40,7 +40,7 @@ async def create_option(option: OptionCreate):
     except DuplicateKeyError:
         raise HTTPException(status_code=400, detail="Option name must be unique")
 
-# ✅ Update an existing option (Using `OptionUpdate`)
+# Update an existing option (Using `OptionUpdate`)
 @router.put("/{option_id}", response_model=OptionResponse)
 async def update_option(option_id: str, updated_option: OptionUpdate):
     update_data = {k: v for k, v in updated_option.model_dump().items() if v is not None}
@@ -59,7 +59,7 @@ async def update_option(option_id: str, updated_option: OptionUpdate):
 
     return OptionResponse(**result, id=str(result["_id"]))
 
-# ✅ Delete an option by ID
+# Delete an option by ID
 @router.delete("/{option_id}")
 async def delete_option(option_id: str):
     try:

@@ -3,9 +3,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class Settings:
-    PROJECT_NAME: str = "Food Truck API"
-    VERSION: str = "0.1.0"
-    ATLAS_URI: str = os.getenv("ATLAS_URI", "mongodb://localhost:27017")
-    DB_NAME: str = os.getenv("DB_NAME", "food_truck")
 
+PROJECT_NAME: str = "Food Truck API"
+VERSION: str = "0.1.0"
+PORT = int(os.getenv("PORT", 8000))
+MONGO_URI = os.getenv("MONGO_URI")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")

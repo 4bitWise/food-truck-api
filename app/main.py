@@ -1,41 +1,32 @@
-import uvicorn
-import routes.menu as menu
-
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from database import AtlasClient
-from config import Settings
+import uvicorn
+import config
+from database import get_database
+from routes import menu
+from routes import options
 
-global app
+app = FastAPI()
 
-# Creating a little mongo atlas client and testing the connection
-atlas_client = AtlasClient.get_instance(
-    atlas_uri=Settings.ATLAS_URI,
-    dbname=Settings.DB_NAME
-)
-atlas_client.ping()
-print('Connected to Atlas instance! We are good to go!')
+# app.include_router(menu_routes.router, prefix="/api")
 
-def create_app():
-    app = FastAPI(title="Food Truck API", version="0.1.0")
+app.include_router(menu.router, prefix="/menu", tags=["Menu"])
+app.include_router(options.router, prefix="/options", tags=["Options"])
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+# Test de connexion à MongoDB
+@app.get("/db-status")
+async def db_status():
+    db = get_database()
+    try:
+        # Vérifie la connexion en listant les collections
+        collections = db.list_collection_names()
+        return {"status": "Connected", "collections": collections}
+    except Exception as e:
+        return {"status": "Error", "message": str(e)}
 
-    app.include_router(menu.router, prefix="/menu", tags=["Menu"])
 
-    @app.get("/")
-    async def root():
-        return {"message": "Bienvenue sur l'API du Food Truck!"}
-
-    return app
-
-app = create_app()
+@app.get("/")
+async def root():
+    return {"message": "Bienvenue sur l'API du Food Truck!"}
 
 if __name__ == "__main__":
-   
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", port=config.PORT, reload=True)

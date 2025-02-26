@@ -41,7 +41,7 @@ async def create_option(option: OptionCreate):
         raise HTTPException(status_code=400, detail="Option name must be unique")
 
 # ✅ Update an existing option (Using `OptionUpdate`)
-@router.put("/options/{option_id}", response_model=OptionResponse)
+@router.put("/{option_id}", response_model=OptionResponse)
 async def update_option(option_id: str, updated_option: OptionUpdate):
     update_data = {k: v for k, v in updated_option.model_dump().items() if v is not None}
 

@@ -4,8 +4,16 @@ from app.main import app
 
 client = TestClient(app)
 
-# POST /options
+@pytest.fixture(autouse=True)
+def cleanup_database():
+    """Clean up the database after each test."""
+    yield
+    # Clean up all menu items
+    options = client.get("/options").json()
+    for opt in options:
+        client.delete(f"/options/{opt['id']}")
 
+# POST /options
 def test_create_option():
     option_data = {
         "name": "Cheese",
@@ -30,7 +38,7 @@ def test_create_option_with_duplicate_name():
 # PUT /options/{option_id}
 def test_update_option():
     option_data = {
-        "name": "Cheese",
+        "name": "Fries",
         "price": 1.5
     }
     create_response = client.post("/options/", json=option_data)
@@ -38,13 +46,14 @@ def test_update_option():
 
     update_data = {"price": 2.0}
     response = client.put(f"/options/{option_id}", json=update_data)
+    print(response.json())
     assert response.status_code == 200
     assert response.json()["price"] == 2.0
 
 # GET /options
 def test_get_options():
     option_data = {
-        "name": "Cheese",
+        "name": "Coca",
         "price": 1.5
     }
     client.post("/options/", json=option_data)
@@ -55,7 +64,7 @@ def test_get_options():
 # DELETE /options/{option_id}
 def test_delete_option():
     option_data = {
-        "name": "Cheese",
+        "name": "Donut",
         "price": 1.5
     }
     create_response = client.post("/options/", json=option_data)

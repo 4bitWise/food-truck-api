@@ -2,15 +2,15 @@ from fastapi import FastAPI
 import uvicorn
 import config
 from database import get_database
-from routes import menu
-from routes import options
+from routes import menu, options, cart, order
 
 app = FastAPI()
 
-# app.include_router(menu_routes.router, prefix="/api")
-
+# Include all routers
 app.include_router(menu.router, prefix="/menu", tags=["Menu"])
 app.include_router(options.router, prefix="/options", tags=["Options"])
+app.include_router(cart.router, prefix="/cart", tags=["Cart"])
+app.include_router(order.router, prefix="/orders", tags=["Orders"])
 
 # Test de connexion à MongoDB
 @app.get("/db-status")

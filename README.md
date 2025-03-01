@@ -1,12 +1,14 @@
 # Food Truck API
 
 ## Overview
-This is a FastAPI-based REST API for managing a food truck's menu and options. It allows users to create, update, retrieve, and delete menu items and options while ensuring data validation and consistency.
+This is a FastAPI-based REST API for managing a food truck's menu, orders, and cart. It allows users to create and manage menu items, place orders, and track order status while ensuring data validation and consistency.
 
 ## Features
 - **Menu Management**: Add, update, retrieve, and delete menu items.
 - **Option Management**: Add, update, retrieve, and delete options.
-- **Validation**: Ensures unique names and verifies the existence of options before associating them with menu items.
+- **Cart Management**: Add items to cart, update quantities, and clear cart.
+- **Order Management**: Create orders from cart, track order status, and process payments.
+- **Validation**: Ensures data consistency and validates order status transitions.
 - **MongoDB Integration**: Stores and retrieves data efficiently.
 - **Testing**: Includes unit, integration, and performance tests.
 
@@ -97,6 +99,32 @@ pytest --benchmark-only
 | `GET` | `/options/{option_id}` | Get a specific option |
 | `PUT` | `/options/{option_id}` | Update an option |
 | `DELETE` | `/options/{option_id}` | Delete an option |
+
+### Cart Routes (`/cart`)
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `GET` | `/cart/` | Get current cart |
+| `POST` | `/cart/items` | Add item to cart |
+| `PUT` | `/cart/items/{item_id}` | Update cart item |
+| `DELETE` | `/cart/items/{item_id}` | Remove item from cart |
+| `POST` | `/cart/clear` | Clear entire cart |
+
+### Order Routes (`/orders`)
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `GET` | `/orders/` | Get all orders |
+| `POST` | `/orders/` | Create order from cart |
+| `GET` | `/orders/order/{order_number}` | Get order by number |
+| `PUT` | `/orders/{order_id}/status` | Update order status |
+| `POST` | `/orders/{order_id}/cancel` | Cancel order |
+| `POST` | `/orders/{order_id}/pay` | Process payment |
+
+#### Order Status Flow
+1. `PENDING` - Initial state when order is created
+2. `IN_PREPARATION` - After payment is processed
+3. `READY` - When food is prepared
+4. `DELIVERED` - When order is picked up
+5. `CANCELLED` - If order is cancelled (only possible from `PENDING` state)
 
 ---
 

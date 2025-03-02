@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from datetime import datetime
 
 class UserBase(BaseModel):
@@ -20,8 +20,8 @@ class User(UserBase):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "email": "user@example.com",
                 "full_name": "John Doe",
@@ -29,6 +29,7 @@ class User(UserBase):
                 "is_active": True
             }
         }
+    )
 
 class UserResponse(User):
     """User model returned to clients (without sensitive data)"""

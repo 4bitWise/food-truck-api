@@ -74,12 +74,26 @@ def validate_menu_items(items: List[dict], collections: dict):
 
 def calculate_total_amount(items: List[dict], collections: dict) -> float:
     menu_collection = collections["menu"]
+    options_collection = collections["options"]
     total = 0.0
     for item in items:
         menu_item = menu_collection.find_one({"_id": ObjectId(item["menu_item_id"])})
         if not menu_item:
             raise HTTPException(status_code=404, detail=f"Menu item {item['menu_item_id']} not found")
-        total += menu_item["price"] * item["quantity"]
+        
+        # Get option prices
+        if item["selected_options"]:
+            available_options = list(options_collection.find(
+                {"name": {"$in": item["selected_options"]}}
+            ))
+            option_prices = {opt["name"]: opt["price"] for opt in available_options}
+            options_total = sum(option_prices.get(name, 0) for name in item["selected_options"])
+        else:
+            options_total = 0
+            
+        # Calculate total including options
+        item_total = (menu_item["price"] + options_total) * item["quantity"]
+        total += item_total
     return total
 
 @router.post("/", response_model=OrderResponse)

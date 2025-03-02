@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime, UTC
 from enum import Enum
 
@@ -34,8 +34,8 @@ class Order(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "order_number": "FT-2024-0001",
                 "items": [
@@ -49,4 +49,5 @@ class Order(BaseModel):
                 "total_amount": 25.97,
                 "status": "pending"
             }
-        } 
+        }
+    ) 

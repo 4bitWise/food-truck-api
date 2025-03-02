@@ -1,12 +1,9 @@
-fastapi[standard]
-starlette
+fastapi
 uvicorn
-motor
+python-dotenv
+pymongo
+dnspython
 pydantic
 pytest
-pytest-asyncio
+pytest-mock
 httpx
-flake8
-pytest-cov
-pymongo[srv]==4.6.2
-python-dotenv

@@ -1,12 +1,10 @@
-#!/usr/bin/env python3.12
-
-from typing import List, Optional
 from pydantic import BaseModel
+from typing import List, Optional
 
-    
-class MenuItem(BaseModel):
-    id: int
+class MenuItemModel(BaseModel):
+    id: str  # ObjectId de MongoDB
     name: str
+    description: Optional[str]
     price: float
-    available: bool = True
-    options: List[str] = []
+    available: bool
+    options: List[str]  # Liste des ObjectId des options

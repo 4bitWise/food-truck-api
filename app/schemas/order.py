@@ -12,10 +12,18 @@ class OrderStatus(str, Enum):
 
 class OrderItem(BaseModel):
     menu_item_id: str = Field(..., description="ID of the menu item")
-    name: str = Field(..., description="Name of the menu item")
-    price: float = Field(..., description="Price of the menu item")
     quantity: int = Field(..., gt=0, description="Quantity ordered")
+    selected_options: List[str] = Field(default_factory=list, description="Names of selected options")
     special_instructions: Optional[str] = None
+
+class OrderResponse(BaseModel):
+    id: str
+    order_number: str
+    items: List[OrderItem]
+    total_amount: float
+    status: OrderStatus
+    created_at: datetime
+    updated_at: datetime
 
 class Order(BaseModel):
     id: Optional[str] = None
@@ -33,13 +41,12 @@ class Order(BaseModel):
                 "items": [
                     {
                         "menu_item_id": "item123",
-                        "name": "Burger",
-                        "price": 9.99,
                         "quantity": 2,
-                        "special_instructions": "No onions"
+                        "selected_options": ["Extra Cheese", "Bacon"],
+                        "special_instructions": "Well done"
                     }
                 ],
-                "total_amount": 19.98,
+                "total_amount": 25.97,
                 "status": "pending"
             }
         } 

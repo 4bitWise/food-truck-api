@@ -1,21 +1,20 @@
-from pydantic import BaseModel
 from typing import List, Optional
+from pydantic import BaseModel, Field
 from datetime import datetime, UTC
-from ..schemas.order import OrderStatus
+from schemas.order import OrderStatus
 
 class OrderItemModel(BaseModel):
-    id: str  # MongoDB ObjectId
     menu_item_id: str
-    name: str
-    price: float
     quantity: int
-    special_instructions: Optional[str]
+    selected_options: List[str]
+    special_instructions: Optional[str] = None
+    total_price: float  # Calculated server-side
 
 class OrderModel(BaseModel):
-    id: str  # MongoDB ObjectId
+    id: Optional[str] = None
     order_number: str
     items: List[OrderItemModel]
     total_amount: float
-    status: OrderStatus
-    created_at: datetime = datetime.now(UTC)
-    updated_at: datetime = datetime.now(UTC)
+    status: OrderStatus = OrderStatus.PENDING
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

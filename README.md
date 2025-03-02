@@ -1,16 +1,16 @@
 # Food Truck API
 
 ## Overview
-This is a FastAPI-based REST API for managing a food truck's menu, orders, and cart. It allows users to create and manage menu items, place orders, and track order status while ensuring data validation and consistency.
+This is a FastAPI-based REST API for managing a food truck's menu, orders, and cart. It allows users to create and manage menu items, place orders with customizable options, and track order status while ensuring data validation and consistency.
 
 ## Features
-- **Menu Management**: Add, update, retrieve, and delete menu items.
-- **Option Management**: Add, update, retrieve, and delete options.
-- **Cart Management**: Add items to cart, update quantities, and clear cart.
-- **Order Management**: Create orders from cart, track order status, and process payments.
-- **Validation**: Ensures data consistency and validates order status transitions.
-- **MongoDB Integration**: Stores and retrieves data efficiently.
-- **Testing**: Includes unit, integration, and performance tests.
+- **Menu Management**: Add, update, retrieve, and delete menu items with customizable options
+- **Option Management**: Add, update, retrieve, and delete options that can be added to menu items
+- **Cart Management**: Add items to cart, customize with available options, update quantities, and clear cart
+- **Order Management**: Create orders from cart, track order status, and process payments
+- **Validation**: Ensures data consistency, validates order status transitions, and verifies option availability
+- **MongoDB Integration**: Stores and retrieves data efficiently
+- **Testing**: Includes unit, integration, and performance tests
 
 ## Technologies Used
 - **FastAPI** (for building the REST API)
@@ -82,6 +82,7 @@ pytest --benchmark-only
 ---
 
 ## API Endpoints
+
 ### Menu Routes (`/menu`)
 | Method | Endpoint | Description |
 |--------|---------|-------------|
@@ -125,6 +126,98 @@ pytest --benchmark-only
 3. `READY` - When food is prepared
 4. `DELIVERED` - When order is picked up
 5. `CANCELLED` - If order is cancelled (only possible from `PENDING` state)
+
+Status Transition Rules:
+- Orders can only be cancelled when in `PENDING` state
+- Payment moves order from `PENDING` to `IN_PREPARATION`
+- Orders must follow the sequence: PENDING -> IN_PREPARATION -> READY -> DELIVERED
+- Invalid status transitions will result in a 400 Bad Request error
+- Cancelled orders cannot be updated further
+
+---
+
+## Request/Response Examples
+
+### Adding Item to Cart
+```json
+// Request
+POST /cart/items
+{
+  "menu_item_id": "item123",
+  "quantity": 2,
+  "selected_options": ["Extra Cheese", "Bacon"],
+  "special_instructions": "Well done"
+}
+
+// Response
+{
+  "items": [
+    {
+      "menu_item_id": "item123",
+      "quantity": 2,
+      "selected_options": ["Extra Cheese", "Bacon"],
+      "special_instructions": "Well done",
+      "total_price": 25.97
+    }
+  ],
+  "total_amount": 25.97
+}
+```
+
+### Creating an Order
+```json
+// Request
+POST /orders/
+
+// Response
+{
+  "order_number": "FT-2024-0001",
+  "items": [
+    {
+      "menu_item_id": "item123",
+      "quantity": 2,
+      "selected_options": ["Extra Cheese", "Bacon"],
+      "special_instructions": "Well done",
+      "total_price": 25.97
+    }
+  ],
+  "total_amount": 25.97,
+  "status": "pending"
+}
+```
+
+## Option Handling
+- Each menu item can have a list of available options
+- When adding items to cart, only available options can be selected
+- Options are specified by name (e.g., "Extra Cheese", "Bacon")
+- Option prices are automatically calculated server-side
+- Total price includes base item price plus all selected options
+- Invalid options will result in a 400 Bad Request error
+- Options can only be selected at the time of adding items to cart
+
+## Price Calculation
+- Item total = (base price + sum of option prices) * quantity
+- Cart/Order total = sum of all item totals
+- All price calculations are handled server-side
+- Prices are validated against current menu and option prices
+- Price calculations are performed at these key points:
+  1. When adding/updating items in cart (server-side)
+  2. When creating an order from cart
+  3. When retrieving cart or order details
+
+## Order Status Flow
+1. `PENDING` - Initial state when order is created
+2. `IN_PREPARATION` - After payment is processed
+3. `READY` - When food is prepared
+4. `DELIVERED` - When order is picked up
+5. `CANCELLED` - If order is cancelled (only possible from `PENDING` state)
+
+Status Transition Rules:
+- Orders can only be cancelled when in `PENDING` state
+- Payment moves order from `PENDING` to `IN_PREPARATION`
+- Orders must follow the sequence: PENDING -> IN_PREPARATION -> READY -> DELIVERED
+- Invalid status transitions will result in a 400 Bad Request error
+- Cancelled orders cannot be updated further
 
 ---
 

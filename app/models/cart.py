@@ -1,15 +1,17 @@
-from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, UTC
+from pydantic import BaseModel, Field
 
 class CartItemModel(BaseModel):
-    id: str  # MongoDB ObjectId
     menu_item_id: str
     quantity: int
-    special_instructions: Optional[str]
+    selected_options: List[str]
+    special_instructions: Optional[str] = None
+    total_price: float  # Calculated server-side
 
 class CartModel(BaseModel):
-    id: str  # MongoDB ObjectId
+    id: Optional[str] = None
     items: List[CartItemModel]
-    created_at: datetime = datetime.now(UTC)
-    updated_at: datetime = datetime.now(UTC) 
+    total_amount: float
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC)) 

@@ -213,19 +213,6 @@ def test_get_order_not_found(client):
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid order ID"
 
-# TODO: Fix this test
-# def test_update_order_status(client):
-#     order_id = str(mock_order["_id"])
-#     response = client.put(f"/orders/{order_id}/status?status=en préparation")
-#     assert response.status_code == 200
-#     assert response.json()["message"] == "Order status updated to OrderStatus.IN_PREPARATION"
-
-#     # Verify status was updated
-#     response = client.get(f"/orders/{order_id}")
-#     assert response.status_code == 200
-#     order = response.json()
-#     assert order["status"] == "en préparation"
-
 def test_update_order_status_not_found(client):
     response = client.put(f"/orders/{str(ObjectId())}/status?status=en préparation")
     assert response.status_code == 400
@@ -238,31 +225,9 @@ def test_cancel_order(client):
     order = response.json()
     assert order["status"] == "annulée"
 
-# TODO: Fix this test
-# def test_cancel_non_pending_order(client):
-#     # First update order to IN_PREPARATION
-#     order_id = str(mock_order["_id"])
-#     client.put(f"/orders/{order_id}/status?status=en préparation")
-    
-#     # Try to cancel
-#     response = client.post(f"/orders/{order_id}/cancel")
-#     assert response.status_code == 400
-#     assert response.json()["detail"] == "Can only cancel pending orders"
-
 def test_pay_order(client):
     order_id = str(mock_order["_id"])
     response = client.post(f"/orders/{order_id}/pay")
     assert response.status_code == 200
     order = response.json()
     assert order["status"] == "en préparation"
-
-# TODO: Fix this test
-# def test_pay_non_pending_order(client):
-#     # First cancel the order
-#     order_id = str(mock_order["_id"])
-#     client.post(f"/orders/{order_id}/cancel")
-    
-#     # Try to pay
-#     response = client.post(f"/orders/{order_id}/pay")
-#     assert response.status_code == 400
-#     assert response.json()["detail"] == "Can only pay for pending orders" 

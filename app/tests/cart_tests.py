@@ -263,29 +263,3 @@ def test_update_cart_item_not_found(client):
     response = client.put(f"/cart/items/{str(ObjectId())}", json=update_data)
     assert response.status_code == 404
     assert response.json()["detail"] == "Item not found in cart"
-
-
-#TODO: Review deletion
-
-# def test_remove_from_cart(client):
-#     print(str(mock_menu_item_1['_id']))
-#     response = client.delete(f"/cart/items/{str(mock_menu_item_1['_id'])}")
-#     assert response.status_code == 200
-#     assert response.json()["message"] == "Item removed from cart"
-#
-#     # Verify cart is updated
-#     response = client.get("/cart/")
-#     assert response.status_code == 200
-#     cart = response.json()
-#     assert len(cart["items"]) == 0
-#     assert cart["total_amount"] == 0
-
-# def test_clear_cart(client):
-#     response = client.delete("/cart/")
-#     assert response.status_code == 200
-#     assert response.json()["message"] == "Cart cleared successfully"
-#
-#     # Verify cart is deleted
-#     response = client.get("/cart/")
-#     assert response.status_code == 404
-#     assert response.json()["detail"] == "Cart not found" 
